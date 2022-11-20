@@ -1,6 +1,6 @@
 export class NodeOfTree {
-  value: number;
   left?: NodeOfTree;
+  value: number;
   right?: NodeOfTree;
 
   constructor(value: number, leftNode?: NodeOfTree, rightNode?: NodeOfTree) {
@@ -45,7 +45,7 @@ export class NodeOfTree {
     if (value < node.value) {
       let leftPath = NodeOfTree.findValue(value, node.left!, [
         ...path,
-        node.value
+        node.value,
       ]);
 
       return leftPath;
@@ -54,7 +54,7 @@ export class NodeOfTree {
     if (value > node.value) {
       let rightPath = NodeOfTree.findValue(value, node.right!, [
         ...path,
-        node.value
+        node.value,
       ]);
 
       return rightPath;
@@ -72,7 +72,7 @@ export class NodeOfTree {
       return [
         ...NodeOfTree.traverse(node.left!, path, order),
         node.value,
-        ...NodeOfTree.traverse(node.right!, path, order)
+        ...NodeOfTree.traverse(node.right!, path, order),
       ];
     }
 
@@ -80,14 +80,14 @@ export class NodeOfTree {
       return [
         ...NodeOfTree.traverse(node.left!, path, order),
         ...NodeOfTree.traverse(node.right!, path, order),
-        node.value
+        node.value,
       ];
     }
 
     return [
       node.value,
       ...NodeOfTree.traverse(node.left!, path, order),
-      ...NodeOfTree.traverse(node.right!, path, order)
+      ...NodeOfTree.traverse(node.right!, path, order),
     ];
   }
 
@@ -129,5 +129,50 @@ export class NodeOfTree {
     }
 
     return false;
+  }
+
+  static isValid(
+    node: NodeOfTree,
+    minValue: number,
+    maxValue: number
+  ): boolean {
+    if (node === undefined) return true;
+
+    if (node.value < minValue || node.value > maxValue) {
+      return false;
+    }
+
+    return (
+      NodeOfTree.isValid(node.left!, minValue, node.value) &&
+      NodeOfTree.isValid(node.right!, node.value, maxValue)
+    );
+  }
+
+  static nodesAtKDistance(
+    node: NodeOfTree,
+    kDistance: number,
+    currDistance: number = 0,
+    path: number[] = []
+  ): number[] {
+    if (node === undefined) return path;
+
+    if (kDistance === currDistance) {
+      return [...path, node.value];
+    }
+
+    return [
+      ...NodeOfTree.nodesAtKDistance(
+        node.left!,
+        kDistance,
+        currDistance + 1,
+        path
+      ),
+      ...NodeOfTree.nodesAtKDistance(
+        node.right!,
+        kDistance,
+        currDistance + 1,
+        path
+      ),
+    ];
   }
 }
