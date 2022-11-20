@@ -1,9 +1,10 @@
-import Tree from "./tree";
+import Tree from "./Tree";
 const gracefulShutdown = require("http-graceful-shutdown");
 const express = require("express");
 
-const values = [10, 5, 15, 6, 1, 8, 12, 18, 17];
-const tree = Tree.fromValues(values);
+const values = [20, 10, 30, 6, 21, 4, 3, 8];
+const tree = Tree.fromValues([7, 4, 9, 1, 6, 8, 10]);
+
 //create express app
 const app = express();
 
@@ -14,7 +15,21 @@ const port = 8082;
 app.get("/", (_: any, response: any) => {
   //send 'Hi, from Node server' to client
   response.setHeader("content-type", "application/json");
-  response.send(JSON.stringify(tree, null, 2));
+  response.json({
+    tree,
+    minimum: tree.minimum(),
+    height: tree.height(),
+    valid: tree.isValid(),
+    //levelOrder Traversal
+    nodesAtHeight: {
+      0: tree.nodesAt(0),
+      1: tree.nodesAt(1),
+      2: tree.nodesAt(2),
+      3: tree.nodesAt(3),
+      4: tree.nodesAt(4),
+      100: tree.nodesAt(100),
+    },
+  });
 });
 
 //create end point
@@ -29,7 +44,8 @@ app.get("/find", (request: any, response: any) => {
     tree,
     minimum: tree.minimum(),
     height: tree.height(),
-    equality: tree.isEqualTo(otherTree)
+    valid: tree.isValid(),
+    equality: tree.isEqualTo(otherTree),
   });
 });
 
@@ -38,7 +54,7 @@ app.get("/traverse", (request: any, response: any) => {
   response.setHeader("content-type", "application/json");
   response.json({
     order: request.query.order,
-    tree: Tree.fromValues(tree.traverse(request.query.order))
+    tree: Tree.fromValues(tree.traverse(request.query.order)),
   });
 });
 
@@ -55,6 +71,6 @@ gracefulShutdown(
     onShutdown: async function (): Promise<void> {
       console.log("closed");
       return Promise.resolve();
-    }
+    },
   }
 );

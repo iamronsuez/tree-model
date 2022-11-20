@@ -1,4 +1,4 @@
-import { NodeOfTree } from "./nodeOfTree";
+import { NodeOfTree } from "./NodeOfTree";
 
 class Tree {
   root?: NodeOfTree;
@@ -34,6 +34,16 @@ class Tree {
 
   isEqualTo(tree: Tree) {
     return NodeOfTree.isEqualTo(this.root!, tree.root!);
+  }
+
+  isValid() {
+    return NodeOfTree.isValid(this.root!, -Infinity, +Infinity);
+  }
+
+  nodesAt(kDistance: number = this.height()) {
+    return kDistance > this.height()
+      ? []
+      : NodeOfTree.nodesAtKDistance(this.root!, kDistance);
   }
 
   ToString() {
